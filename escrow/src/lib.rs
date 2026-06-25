@@ -22,7 +22,6 @@ pub struct Contract;
 
 #[contractimpl]
 impl Contract {
-    
     pub fn approve_exit(env: Env, member: Address) {
         member.require_auth();
 
@@ -41,7 +40,7 @@ impl Contract {
             panic_with_error!(&env, Error::NoExitRequestFound);
         }
 
-        // Remove from PayoutOrder and compact the gap
+        // Remove from PayoutOrder and compact the gap (fixes #389)
         if let Some(pos) = payout_order.iter().position(|m| *m == member) {
             payout_order.remove(pos as u32);
             env.storage().instance().set(&DataKey::PayoutOrder, &payout_order);
