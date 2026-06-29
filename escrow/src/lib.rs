@@ -40,7 +40,7 @@ impl Contract {
             panic_with_error!(&env, Error::NoExitRequestFound);
         }
 
-        // Remove from PayoutOrder and compact the gap
+        // Remove from PayoutOrder and compact the gap (fixes #389)
         if let Some(pos) = payout_order.iter().position(|m| *m == member) {
             payout_order.remove(pos as u32);
             env.storage().instance().set(&DataKey::PayoutOrder, &payout_order);
@@ -49,7 +49,7 @@ impl Contract {
         // Save updated members
         env.storage().instance().set(&DataKey::Members, &members);
 
-        // Emit event
+        // Emit required event
         env.events().publish(
             (symbol_short!("PayoutOrder"), symbol_short!("Compacted")),
             PayoutOrderCompacted {
